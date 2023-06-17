@@ -10,6 +10,7 @@ router.post("/", async (req, res) => {
     name: Joi.string().min(3).max(30).required(),
     email: Joi.string().min(3).max(200).required().email(),
     password: Joi.string().min(6).max(200).required(),
+    confirmpassword: Joi.string().min(6).max(200).required()
   });
 
   const { error } = schema.validate(req.body);
@@ -19,7 +20,7 @@ router.post("/", async (req, res) => {
   let user = await User.findOne({ email: req.body.email });
   if (user) return res.status(400).send("User already exists...");
 
-  console.log("here");
+
 
   const { name, email, password } = req.body;
 
