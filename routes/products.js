@@ -12,7 +12,7 @@ router.post("/", isAdmin, async (req, res) => {
   try {
     if (image) {
       const uploadedResponse = await cloudinary.uploader.upload(image, {
-        upload_preset: "online-shop",
+        upload_preset: "onlineShop",
       });
 
       if (uploadedResponse) {
@@ -30,7 +30,7 @@ router.post("/", isAdmin, async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    res.status(500).send(error);
+    res.status(500).send(error.message);
   }
 });
 

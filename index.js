@@ -6,10 +6,22 @@ const login = require("./routes/login");
 const orders = require("./routes/orders");
 const stripe = require("./routes/stripe");
 const productsRoute = require("./routes/products");
+const rawBody = require("raw-body");
+
+const app = express();
+
+
+// Add the raw-body middleware before your route handling middleware
+app.use(express.raw({ verify: rawBodySignatureVerifier, type: "*/*" }));
+
+function rawBodySignatureVerifier(req, res, buf) {
+  if (buf && buf.length) {
+    req.rawBody = buf.toString("utf8");
+  }
+}
 
 const products = require("./products");
 
-const app = express();
 
 require("dotenv").config();
 

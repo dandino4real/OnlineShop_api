@@ -2,6 +2,7 @@ const dotenv = require("dotenv");
 const cloudinaryModule = require("cloudinary");
 
 dotenv.config();
+
 const cloudinary = cloudinaryModule.v2;
 
 cloudinary.config({

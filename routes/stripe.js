@@ -1,8 +1,8 @@
 const express = require("express");
 const Stripe = require("stripe");
 const { Order } = require("../models/Order");
-
 require("dotenv").config();
+
 
 const stripe = Stripe(process.env.STRIPE_KEY);
 
@@ -16,7 +16,7 @@ router.post("/create-checkout-session", async (req, res) => {
     },
   });
 
-  const line_items = req.body.cartItems.map((item) => {
+  const lineItems = req.body.cartItems?.map((item) => {
     return {
       price_data: {
         currency: "usd",
@@ -37,7 +37,7 @@ router.post("/create-checkout-session", async (req, res) => {
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     shipping_address_collection: {
-      allowed_countries: ["US", "CA", "KE"],
+      allowed_countries: ["US", "CA", "KE", "NG"],
     },
     shipping_options: [
       {
@@ -86,14 +86,14 @@ router.post("/create-checkout-session", async (req, res) => {
     phone_number_collection: {
       enabled: true,
     },
-    line_items,
+    line_items:lineItems,
     mode: "payment",
     customer: customer.id,
     success_url: `${process.env.CLIENT_URL}/checkout-success`,
     cancel_url: `${process.env.CLIENT_URL}/cart`,
   });
 
-  // res.redirect(303, session.url);
+  
   res.send({ url: session.url });
 });
 
@@ -118,6 +118,7 @@ const createOrder = async (customer, data) => {
     total: data.amount_total,
     shipping: data.customer_details,
     payment_status: data.payment_status,
+
   });
 
   try {
@@ -128,32 +129,32 @@ const createOrder = async (customer, data) => {
   }
 };
 
-// Stripe webhoook
+// // Stripe webhoook
 
 router.post(
   "/webhook",
-  express.json({ type: "application/json" }),
-  async (req, res) => {
+  express.raw({ type: "application/json" }),
+  (req, res) => {
+    
     let data;
     let eventType;
 
     // Check if webhook signing is configured.
     let webhookSecret;
-    //webhookSecret = process.env.STRIPE_WEB_HOOK;
-
+    webhookSecret = process.env.STRIPE_WEB_HOOK;
     if (webhookSecret) {
       // Retrieve the event by verifying the signature using the raw body and secret.
       let event;
       let signature = req.headers["stripe-signature"];
-
       try {
         event = stripe.webhooks.constructEvent(
-          req.body,
+          req.rawBody,
           signature,
           webhookSecret
         );
+       
       } catch (err) {
-        console.log(`⚠️  Webhook signature verification failed:  ${err}`);
+        console.log(`⚠️  Webhook signature verification failed:  ${err.message}`);
         return res.sendStatus(400);
       }
       // Extract the object from the event.
