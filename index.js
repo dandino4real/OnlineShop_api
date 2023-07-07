@@ -6,19 +6,20 @@ const login = require("./routes/login");
 const orders = require("./routes/orders");
 const stripe = require("./routes/stripe");
 const productsRoute = require("./routes/products");
-const rawBody = require("raw-body");
+const userRoute = require("./routes/users");
+// const rawBody = require("raw-body");
 
 const app = express();
 
 
 // Add the raw-body middleware before your route handling middleware
-app.use(express.raw({ verify: rawBodySignatureVerifier, type: "*/*" }));
+// app.use(express.raw({ verify: rawBodySignatureVerifier, type: "*/*" }));
 
-function rawBodySignatureVerifier(req, res, buf) {
-  if (buf && buf.length) {
-    req.rawBody = buf.toString("utf8");
-  }
-}
+// function rawBodySignatureVerifier(req, res, buf) {
+//   if (buf && buf.length) {
+//     req.rawBody = buf.toString("utf8");
+//   }
+// }
 
 const products = require("./products");
 
@@ -33,8 +34,10 @@ app.use("/api/login", login);
 app.use("/api/orders", orders);
 app.use("/api/stripe", stripe);
 app.use("/api/products", productsRoute);
+app.use("/api/users", userRoute );
 
 app.get("/", (req, res) => {
+  
   res.send("Welcome our to online shop API...");
 });
 

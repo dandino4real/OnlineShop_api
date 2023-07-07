@@ -1,6 +1,6 @@
 const products = [
   {
-    id: 1,
+    _id: 1,
     name: "iPhone 12 Pro",
     brand: "Apple",
     desc: "6.1-inch display",
@@ -9,7 +9,7 @@ const products = [
       "https://res.cloudinary.com/dmfv0odah/image/upload/v1686740331/Image/iphone12pro_ylpjt3.jpg",
   },
   {
-    id: 2,
+    _id: 2,
     name: "iPhone 12",
     brand: "Apple",
     desc: "5.4-inch mini display",
@@ -18,7 +18,7 @@ const products = [
       "https://res.cloudinary.com/dmfv0odah/image/upload/v1686740325/Image/iphone12_y2cuss.jpg",
   },
   {
-    id: 3,
+    _id: 3,
     name: "Galaxy S",
     brand: "Samsung",
     desc: "6.5-inch display",

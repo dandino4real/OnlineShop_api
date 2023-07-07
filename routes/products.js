@@ -3,7 +3,7 @@ const { auth, isUser, isAdmin } = require("../middleware/auth");
 const cloudinary = require("../utils/cloudinary");
 
 const router = require("express").Router();
-
+const products = require("../products")
 //CREATE
 
 router.post("/", isAdmin, async (req, res) => {
@@ -48,22 +48,25 @@ router.delete("/:id", isAdmin, async (req, res) => {
 //GET ALL PRODUCTS
 
 router.get("/", async (req, res) => {
-  const qbrand = req.query.brand;
-  try {
-    let products;
 
-    if (qbrand) {
-      products = await Product.find({
-        brand: qbrand,
-      });
-    } else {
-      products = await Product.find();
-    }
+  res.send(products);
 
-    res.status(200).send(products);
-  } catch (error) {
-    res.status(500).send(error);
-  }
+  // const qbrand = req.query.brand;
+  // try {
+  //   let products;
+
+  //   if (qbrand) {
+  //     products = await Product.find({
+  //       brand: qbrand,
+  //     });
+  //   } else {
+  //     products = await Product.find();
+  //   }
+
+  //   res.status(200).send(products);
+  // } catch (error) {
+  //   res.status(500).send(error);
+  // }
 });
 
 //GET PRODUCT
