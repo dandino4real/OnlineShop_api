@@ -12,14 +12,7 @@ const userRoute = require("./routes/users");
 const app = express();
 
 
-// Add the raw-body middleware before your route handling middleware
-// app.use(express.raw({ verify: rawBodySignatureVerifier, type: "*/*" }));
 
-// function rawBodySignatureVerifier(req, res, buf) {
-//   if (buf && buf.length) {
-//     req.rawBody = buf.toString("utf8");
-//   }
-// }
 
 const products = require("./products");
 
