@@ -1,146 +1,17 @@
-const { Product } = require("../models/Product");
-const { auth, isUser, isAdmin } = require("../middleware/auth");
-const cloudinary = require("../utils/cloudinary");
+const { isAdmin } = require("../middleware/auth");
+const productControllers = require("../controllers/productController");
 
 const router = require("express").Router();
-// const products = require("../products")
 
-//GET ALL PRODUCTS
+router
+  .route("/")
+  .get(productControllers.getProducts)
+  .post(isAdmin, productControllers.createProduct);
 
-router.get("/", async (req, res) => {
-  const qbrand = req.query.brand;
-  try {
-    let products;
-
-    if (qbrand) {
-      products = await Product.find({
-        brand: qbrand,
-      });
-    } else {
-      products = await Product.find();
-    }
-
-    res.status(200).send(products);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-});
-
-//GET PRODUCT
-
-router.get("/find/:id", async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id);
-    res.status(200).send(product);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-});
-
-// EDIT PRODUCT
-
-router.put("/:id", isAdmin, async (req, res) => {
-  if (req.body.productImg) {
-    try {
-      const destroyResponse = await cloudinary.uploader.destroy(
-        req.body.product.image.public_id
-      );
-
-      if (destroyResponse) {
-        const uploadResponse = await cloudinary.uploader.upload(
-          req.body.productImg,
-          {
-            upload_preset: "onlineShop",
-          }
-        );
-
-        if (uploadResponse) {
-          const updatedProduct = await Product.findByIdAndUpdate(
-            req.params.id,
-            {
-              $set: {
-                ...req.body.product,
-                image: uploadResponse,
-              },
-            },
-            { new: true }
-          );
-          res.status(200).send(updatedProduct);
-        }
-      }
-    } catch (error) {
-      res.status(500).send(error);
-    }
-  } else {
-    try {
-      const updatedProduct = await Product.findByIdAndUpdate(
-        req.params.id,
-        {
-          $set: req.body.product,
-        },
-        { new: true }
-      );
-      res.status(200).send(updatedProduct);
-    } catch (error) {
-      res.status(500).send(error);
-    }
-  }
-});
-
-
-//CREATE
-
-router.post("/", isAdmin, async (req, res) => {
-  const { name, brand, desc, price, image } = req.body;
-
-  try {
-    if (image) {
-      const uploadedResponse = await cloudinary.uploader.upload(image, {
-        upload_preset: "onlineShop",
-      });
-
-      if (uploadedResponse) {
-        const product = new Product({
-          name,
-          brand,
-          desc,
-          price,
-          image: uploadedResponse,
-        });
-
-        const savedProduct = await product.save();
-        res.status(200).send(savedProduct);
-      }
-    }
-  } catch (error) {
-    console.log(error);
-    res.status(500).send(error.message);
-  }
-});
-
-//DELETE
-
-router.delete("/:id", isAdmin, async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).send("Product not found ...");
-    if (product.image.public_id) {
-      const destroyResponse = await cloudinary.uploader.destroy(
-        product.image.public_id
-      );
-
-      if (destroyResponse) {
-        const deleteProduct = await Product.findByIdAndDelete(req.params.id);
-        res.status(200).send(deleteProduct);
-      }
-    } else {
-      console.log("Action terminated. Failed to destroy product image ...");
-    }
-
-    res.status(200).send("Product has been deleted...");
-  } catch (error) {
-    res.status(500).send(error);
-  }
-});
+router
+  .route("/:id")
+  .get(productControllers.getProduct)
+  .put(isAdmin, productControllers.editProduct)
+  .delete(isAdmin, productControllers.deleteProduct);
 
 module.exports = router;

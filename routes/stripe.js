@@ -46,7 +46,7 @@ router.post("/create-checkout-session", async (req, res) => {
             currency: "usd",
           },
           display_name: "Free shipping",
-          // Delivers between 5-7 business days
+
           delivery_estimate: {
             minimum: {
               unit: "business_day",
@@ -67,7 +67,7 @@ router.post("/create-checkout-session", async (req, res) => {
             currency: "usd",
           },
           display_name: "Next day air",
-          // Delivers in exactly 1 business day
+
           delivery_estimate: {
             minimum: {
               unit: "business_day",
@@ -97,13 +97,6 @@ router.post("/create-checkout-session", async (req, res) => {
 // Create order function
 
 const createOrder = async (customer, data, lineItems) => {
-  // const products = Items.map((item) => {
-  //   return {
-  //     productId: item.id,
-  //     quantity: item.cartQuantity,
-  //   };
-  // });
-
   const newOrder = new Order({
     userId: customer.metadata.userId,
     customerId: data.customer,
@@ -132,16 +125,14 @@ router.post(
     let data;
     let eventType;
 
-    // Check if webhook signing is configured.
     let webhookSecret;
     webhookSecret = process.env.STRIPE_WEB_HOOK;
     if (webhookSecret) {
-      // Retrieve the event by verifying the signature using the raw body and secret.
       let event;
       let sig = req.headers["stripe-signature"];
 
-      console.log("Request Body:", req.body); // Add this line
-      console.log("Signature:", sig); // Add this line
+      console.log("Request Body:", req.body);
+      console.log("Signature:", sig);
 
       try {
         event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
@@ -157,9 +148,6 @@ router.post(
       data = event.data.object;
       eventType = event.type;
     } else {
-      // Webhook signing is recommended, but if the secret is not configured in `config.js`,
-      // retrieve the event data directly from the request body.
-
       data = req.body.data.object;
       eventType = req.body.type;
     }
